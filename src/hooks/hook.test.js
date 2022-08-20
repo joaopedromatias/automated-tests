@@ -5,19 +5,19 @@ describe('User', () => {
     const email = 'test@test.com';
     let user = new User(email);
 
-    beforeAll( () => { // executada antes da inicialização da execução dos testes
+    beforeAll( () => { 
 
     })
 
-    beforeEach( () => { // executada antes de cada teste
+    beforeEach( () => {
      
     })
 
-    afterEach(() => { // executada após cada teste
+    afterEach(() => { 
         user = new User(email);
     })
 
-    afterAll(() => { // executada após todos os testes
+    afterAll(() => { 
 
     })
 

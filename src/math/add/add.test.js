@@ -1,6 +1,5 @@
 import { add } from "./add";
 
-//inicio do teste
 it('should summarize the parameters', () => {
     // arrange
     const n1 = 2

@@ -1,6 +1,6 @@
-# Unit Testing 
+# Automated Testing 
 
-The main goal of unit testing is to check whether the application will work (and keep working after some change) as expected or not. It provides lot of more reliability and consistency to the project and practicality to developers in the long term.
+The main goal of automated testing is to check whether the application will work (and keep working after some change) as expected or not. It provides lot of more `reliability` and `consistency` to the project and practicality to developers.
 
 ## Manual Testing
 
@@ -16,7 +16,7 @@ write code to automatically test another code
 - consistent
 - more scenarios tested
 
-Unit testing and integration testing are types of automated tests.
+`Unit testing` and `integration testing` are types of automated tests.
 
 Unit -> building blocks of an app, ideally, the smallest building blocks
 Building Blocks -> mostly functions and classes (also components in React)
@@ -44,7 +44,7 @@ test is write first than the feature itself
 
 ## What to test
 
-Test must test only own code, excluding third party and language built-ins
+We must only test our own code, excluding third party and language built-ins.
 
 ## Writing tests 
 
@@ -142,38 +142,50 @@ The `toEqual()` method checks the values, and not also the memory space like the
 
 ## Asynchronous Callbacks
 
-Para resolver isso usamos o `primeiro parametro do callback` do `it`. Quando a função (parametro) for chamada, significa que o teste deve finalizar.
+Many times when working with asynchronous callbacks it's needed to use the try catch blocks along with the `first parameter` of the `it` function, due to the fact that errors inside async callbacks are not detected by default.
 
-Além disso, ao trabalhar com testes assíncronos é preciso usar bloco de `try catch`. Isso ocorre porque os erros identificados pelos métodos `toSomething` não são pegos dentro de uma função callback, e acaba ocorrendo o erro por timeout. O try catch resolve isso, porque ele identifica o erro ocorrido na toSomething, e então joga para o bloco catch. Caso não haja erro, não chega ao catch. 
+The parameter, often assigned with `done`, tells the test runner that the test is finished.
 
-O bloco `try` para de executar seu código a partir do momento que um erro ocorre, por isso o `done()` desse bloco `não é lido quando há erros`. Nesse caso, o `done(err)` do bloco `catch` que é lido.
+The try block execution stops when an error is thrown, that's why the `done()` of it is not readen when there are errors. In this case the `done(err)` of the catch block is readen and executed.
 
 ```javascript
-import { generateToken } from 'generateToken'
+describe('asyncCallbackFn()', () => { 
 
-it('should do something...', (done) => { 
-
-    const value = 'value'
-
-    generateToken(value, (err, token) => { 
-        
-        try { 
-            expect(token).toBeDefined(); 
-            done() // não aparece erro no console
-        } catch (err) { 
-            done(err) // aparece o erro no console
+    it('should resolve with Darth Vader if the parameter is 4', (done) => { 
+        const param = 4
+        const callbackFn = (characterName) => { 
+            try {
+                expect(characterName).toBe('Darth Vader'); //if this fails it will throw an error
+                done();
+            } catch(err) { 
+                done(err); // we can see the error if this is executed
+            }
         }
+
+        asyncCallbackFn(param, callbackFn);
     })
-    // o teste passa porque ele não encontra nenhum expect
+
+    it('should throw error if first parameter is not numeric', async () => {
+        
+        // async functions will return a promise
+
+        const characterNumber = 'hi'
+        const callbackFn = () => {
+            console.log(`i'm the callback code`);
+        }
+
+        const fn = () => asyncCallbackFn(characterNumber,callbackFn); 
+        
+        await expect(fn).rejects.toBe('parameter should be numeric') // since it's a async function we can omit the return statement in front of the expect method
+        
+        // If it was not an async function, the return statement would make jest wait the promise
+        // return expect(fn).rejects.toBe('parameter should be numeric')
+    })
 })
 ```
 
-Mais um exemplo pro callback: 
-
-#### Função a ser testada 
-
 ```javascript
-// checkText
+// checkText.js
 
 export const checkText = (text, callback) => { 
     if (text==='right') { 
@@ -193,12 +205,12 @@ describe('checkText()', () => {
         
         const text = 'right';
 
-        // chamamos a função testada declarando um novo callback, para testá-lo
+        // we call the tested function passing a new callback
 
         checkText(text, (param) => { 
-            expect(param).toBe(1); //funciona sem o done porque a função é síncrona
+            expect(param).toBe(1); // works without the done because it's sync
         }
-        // executa a função
+        // executes the function
         )
     })
  
@@ -206,18 +218,12 @@ describe('checkText()', () => {
 
         const text = 'something';
 
-        // chamamos a função testada declarando um novo callback, para testá-lo
-
         checkText(text, (param) => { 
-            expect(param).toBe(0); //funciona sem o done porque a função é síncrona
-        }
-        // executa a função
-        )
+            expect(param).toBe(0);
+        })
     })
 })
 ```
-
-Se quiséssemos testar a função passada no callback, teríamos que ter a suíte de teste dela. 
 
 ## Promises 
 
@@ -307,7 +313,9 @@ To get rid of side effects we use: `mocks`
 ```javascript
 it('should call the function passed as a callback with the right parameters', () => { 
         const logger = jest.fn(); // creates an empty spied function 
-        const logger = jest.fn( () => { ... }); // creates a non empty spied function
+        const logger = jest.fn( () => { 
+            // new function code
+         }); // creates a non empty spied function
 
         // jest.fn(implementation) is a shorthand for jest.fn().mockImplementation(implementation).
         
@@ -320,16 +328,15 @@ it('should call the function passed as a callback with the right parameters', ()
 
 ### Automocking
 
-
 ```javascript 
-jest.mock('axios') // all axios functions will be replaced to empty spy functions, so it will not actually work on the code
+jest.mock('axios') // all axios functions will be replaced to empty spy functions, so it will not actually work on the code like the original axios methods do
 
 it('should ', () => { 
     // ...
 })
 ```
 
-Mocking impacts only the tests files
+Mocking impacts only the tests files!
 
 ### Custom Mocking
 
@@ -397,3 +404,19 @@ mockFn(); // 'second call'
 mockFn(); // 'default'
 mockFn(); // 'default'
 ```
+
+## Mocking Globals 
+
+inside the test suite, we do like following (it will only change the method inside the test suite, since each of them run on its own environment):
+
+```javascript
+jest.spyOn(Math, 'random').mockImplementation(() => {
+        console.log('mocked random method');
+    });
+
+afterEach(() => { 
+    jest.restoreAllMocks() // this method restores all the mocks created by spyOn
+})
+```
+
+It's different to mock a third party, built-in or custom module and to mock a global method. To mock a global method in Jest we can do like shown above.

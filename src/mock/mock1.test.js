@@ -1,9 +1,9 @@
-import { callCallback } from "./spies";
+import { callCallback } from "./mock1";
 
 describe('callCallback()', () => { 
     
     it('should call the function passed as a callback with the right parameters', () => { 
-        const logger = jest.fn(); // cria uma função fake que permite ser 'espiada' (spied)
+        const logger = jest.fn(); // creates an empty spied function
         
         callCallback(logger)
         

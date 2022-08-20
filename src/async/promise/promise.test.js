@@ -1,4 +1,4 @@
-import { checkName, getName } from "./swapi";
+import { checkName, getName } from "./promise";
 
 describe('checkName()', () => { 
 
