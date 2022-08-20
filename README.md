@@ -1,3 +1,5 @@
+`### npm run test-dom`
+
 # Automated Testing 
 
 The main goal of automated testing is to check whether the application will work (and keep working after some change) as expected or not. It provides lot of more `reliability` and `consistency` to the project and practicality to developers.
@@ -48,12 +50,12 @@ We must only test our own code, excluding third party and language built-ins.
 
 ## Writing tests 
 
-<script>
+```javascript
 it("what i'm testing and what are the expectations", () => { 
     const result = add(1,2); 
     expect(result).toBe(3); 
 })
-</script>
+```
 
 ## AAA - Arrange, Act, Assert 
 
@@ -61,7 +63,7 @@ it("what i'm testing and what are the expectations", () => {
 - Act -> runs the test
 - Assert -> evaluate the result
 
-<script>
+```javascript
 it("what i'm testing and what are the expectations", () => { 
     // Arrange 
     const n1 = 1;
@@ -75,13 +77,13 @@ it("what i'm testing and what are the expectations", () => {
     expect(result).toBe(resultExpected); 
     expect(res).toBeTypeOf('number'); 
 })
-</script>
+```
 
 ## Testing Errors 
 
 In javascript the errors are not stored in variables, but they are throw. That's why writing tests that test error a little bit different:
 
-<script>
+```javascript
 it('should throw error if both parameters are strings', () => { 
     const functionToTest = () => { 
         add('test', 'test2');
@@ -89,19 +91,19 @@ it('should throw error if both parameters are strings', () => {
 
     expect(functionToTest).toThrow();
 })
-</script>
+```
 
 It is also possible to do with try catch
 
 ## not property
 
-<script>
+```javascript
 expect(functionToTest).not.toThrow();
-</script>
+```
 
 ## Tests Suites
 
-<script>
+```javascript
 // validateNumber.test.js
 
 describe('validateNumber()', () => { 
@@ -117,7 +119,7 @@ describe('validateNumber()', () => {
         expect(resultFunc1).not.toThrow()
     })
 })
-</script>
+```
 
 ## Writing good tests
 
