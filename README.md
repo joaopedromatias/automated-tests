@@ -420,3 +420,71 @@ afterEach(() => {
 ```
 
 It's different to mock a third party, built-in or custom module and to mock a global method. To mock a global method in Jest we can do like shown above.
+
+## Testing the DOM
+
+### Creating the DOM
+
+We need to use a different test environment in order to test the DOM assertively.
+
+The default is NodeJS envrionment, in which of course there are no window browser object
+
+Jest emulates the DOM environment with jsdom environment by running the CLI command with flag --evn=jsdom
+
+It requires the install of jest-environment-dom package
+
+We can both manually and dynamically create a virtual DOM document to test in it. In most times it is better to do it dynamically using the real index.html file
+
+### Testing the DOM
+
+```javascript 
+import { createDiv, appendDiv } from './dom'
+import fs from 'fs'
+import path from 'path'
+
+const htmlDocPath = path.join(process.cwd(), 'index.html');
+const htmlContent = fs.readFileSync(htmlDocPath).toString();
+
+describe('dom', () => { 
+
+    beforeEach(() => { 
+        // dynamically assign the real DOM content before each test
+        window.document.write(htmlContent)
+    })
+
+    describe('assigning DOM', () => { 
+    
+        it ('should return Hello World!!!', () => {  
+            
+            const paragraphElementText = document.querySelector('#text').textContent;
+            
+            expect(paragraphElementText).toBe('Hello world!!!')
+        })
+    })
+    
+    describe('createDiv()', () => { 
+    
+        it ('should return a defined object', () => {  
+            expect(createDiv()).toBeDefined()
+        })
+    
+        it ('should return a defined object with text hello', () => { 
+            expect(createDiv().textContent).toBe('hello')
+        })
+    })
+
+    describe('appendDiv()', () => { 
+
+        afterEach(() => { 
+            console.log(document.body.innerHTML) // show us the DOM after each test so we can see if the apend div is actually working in the same document we've declared before
+        })
+
+        it('should append the div', () => { 
+            appendDiv();
+
+            expect(document.getElementById('new-div').textContent).toBe('hello')
+        })
+    })
+
+})
+```
